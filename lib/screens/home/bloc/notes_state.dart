@@ -1,20 +1,16 @@
 part of 'notes_bloc.dart';
 
-@immutable
-abstract class NotesState {}
+@freezed
+class NotesState with _$NotesState {
+  const factory NotesState.initial() = _NotesInitialState;
 
-class NotesInitialState extends NotesState {}
+  const factory NotesState.loading() = _NotesLoadingState;
 
-class NotesLoadingState extends NotesState {}
+  const factory NotesState.success({
+    required List<Note> notes,
+  }) = _NotesSuccessState;
 
-class NotesSuccessState extends NotesState {
-  final List<Note> notes;
-
-  NotesSuccessState({required this.notes});
-}
-
-class NotesErrorState extends NotesState {
-  final String errorMessage;
-
-  NotesErrorState({required this.errorMessage});
+  const factory NotesState.error({
+    required String errorMessage,
+  }) = _NotesErrorState;
 }

@@ -16,52 +16,45 @@ class HomeScreen extends StatelessWidget {
       ),
       body: BlocBuilder<NotesBloc, NotesState>(
         builder: (context, state) {
-          if (state is NotesLoadingState) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (state is NotesSuccessState) {
-            return RefreshIndicator(
+          return state.when(
+            initial: () => EmptyListPlaceholder(
               onRefresh: () async {
-                context.read<NotesBloc>().add(GetNotesEvent());
+                context.read<NotesBloc>().add(const NotesEvent.getNotes());
+              },
+              icon: Icon(
+                Icons.not_interested_outlined,
+                size: MediaQuery.of(context).size.width / 2,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              placeholderText: 'Заметок пока нет :(',
+            ),
+            loading: () => const Center(
+              child: CircularProgressIndicator(),
+            ),
+            success: (notes) => RefreshIndicator(
+              onRefresh: () async {
+                context.read<NotesBloc>().add(const NotesEvent.getNotes());
               },
               child: ListView.builder(
-                itemCount: state.notes.length,
+                itemCount: notes.length,
                 itemBuilder: (context, index) {
-                  final Note note = state.notes[index];
+                  final Note note = notes[index];
 
                   return NoteCard(note: note);
                 },
               ),
-            );
-          }
-
-          if (state is NotesErrorState) {
-            return EmptyListPlaceholder(
+            ),
+            error: (errorMessage) => EmptyListPlaceholder(
               onRefresh: () async {
-                context.read<NotesBloc>().add(GetNotesEvent());
+                context.read<NotesBloc>().add(const NotesEvent.getNotes());
               },
               icon: Icon(
                 Icons.warning_amber_rounded,
                 size: MediaQuery.of(context).size.width / 2,
                 color: Theme.of(context).colorScheme.error,
               ),
-              placeholderText: state.errorMessage,
-            );
-          }
-
-          return EmptyListPlaceholder(
-            onRefresh: () async {
-              context.read<NotesBloc>().add(GetNotesEvent());
-            },
-            icon: Icon(
-              Icons.not_interested_outlined,
-              size: MediaQuery.of(context).size.width / 2,
-              color: Theme.of(context).colorScheme.primary,
+              placeholderText: errorMessage,
             ),
-            placeholderText: 'Заметок пока нет :(',
           );
         },
       ),
@@ -115,7 +108,7 @@ class HomeScreen extends StatelessWidget {
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
                       context.read<NotesBloc>().add(
-                            AddNoteEvent(
+                            NotesEvent.addNote(
                               Note(
                                 title: title,
                                 content: content,

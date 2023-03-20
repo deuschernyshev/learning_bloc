@@ -1,52 +1,53 @@
 import 'package:bloc/bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:learning_bloc/models/note/note.dart';
 import 'package:learning_bloc/repositories/notes/notes_repository.dart';
-import 'package:meta/meta.dart';
 
 part 'notes_event.dart';
 part 'notes_state.dart';
+part 'notes_bloc.freezed.dart';
 
 class NotesBloc extends Bloc<NotesEvent, NotesState> {
   final NotesRepository _notesRepository = NotesRepository();
 
-  NotesBloc() : super(NotesInitialState()) {
-    on<InitNotesEvent>(_initNotes);
-    on<GetNotesEvent>(_getNotes);
-    on<UpdateNoteEvent>(_updateNote);
-    on<AddNoteEvent>(_addNote);
-    on<DeleteNoteEvent>(_deleteNote);
+  NotesBloc() : super(const _NotesInitialState()) {
+    on<_InitNotesEvent>(_initNotes);
+    on<_GetNotesEvent>(_getNotes);
+    on<_UpdateNoteEvent>(_updateNote);
+    on<_AddNoteEvent>(_addNote);
+    on<_DeleteNoteEvent>(_deleteNote);
   }
 
   Future<void> _initNotes(
     NotesEvent event,
     Emitter<NotesState> emit,
   ) async {
-    add(GetNotesEvent());
+    add(const _GetNotesEvent());
   }
 
   Future<void> _getNotes(
-    GetNotesEvent event,
+    _GetNotesEvent event,
     Emitter<NotesState> emit,
   ) async {
-    emit(NotesLoadingState());
+    emit(const _NotesLoadingState());
 
     try {
       final List<Note> notes = await _notesRepository.getNotes();
 
       if (notes.isEmpty) {
-        emit(NotesInitialState());
+        emit(const _NotesInitialState());
 
         return;
       }
 
-      emit(NotesSuccessState(notes: notes));
+      emit(_NotesSuccessState(notes: notes));
     } catch (e) {
-      emit(NotesErrorState(errorMessage: 'Произошла ошибка'));
+      emit(const _NotesErrorState(errorMessage: 'Произошла ошибка'));
     }
   }
 
   Future<void> _updateNote(
-    UpdateNoteEvent event,
+    _UpdateNoteEvent event,
     Emitter<NotesState> emit,
   ) async {
     final Note note = event.note;
@@ -57,28 +58,28 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       ),
     );
 
-    add(GetNotesEvent());
+    add(const _GetNotesEvent());
   }
 
   Future<void> _addNote(
-    AddNoteEvent event,
+    _AddNoteEvent event,
     Emitter<NotesState> emit,
   ) async {
     final Note note = event.note;
 
     await _notesRepository.addNote(note);
 
-    add(GetNotesEvent());
+    add(const _GetNotesEvent());
   }
 
   Future<void> _deleteNote(
-    DeleteNoteEvent event,
+    _DeleteNoteEvent event,
     Emitter<NotesState> emit,
   ) async {
     final Note note = event.note;
 
     await _notesRepository.deleteNote(note);
 
-    add(GetNotesEvent());
+    add(const _GetNotesEvent());
   }
 }

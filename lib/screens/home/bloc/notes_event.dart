@@ -1,26 +1,10 @@
 part of 'notes_bloc.dart';
 
-@immutable
-abstract class NotesEvent {}
-
-class InitNotesEvent extends NotesEvent {}
-
-class GetNotesEvent extends NotesEvent {}
-
-class UpdateNoteEvent extends NotesEvent {
-  final Note note;
-
-  UpdateNoteEvent(this.note);
-}
-
-class AddNoteEvent extends NotesEvent {
-  final Note note;
-
-  AddNoteEvent(this.note);
-}
-
-class DeleteNoteEvent extends NotesEvent {
-  final Note note;
-
-  DeleteNoteEvent(this.note);
+@freezed
+class NotesEvent with _$NotesEvent {
+  const factory NotesEvent.init() = _InitNotesEvent;
+  const factory NotesEvent.getNotes() = _GetNotesEvent;
+  const factory NotesEvent.deleteNote(Note note) = _DeleteNoteEvent;
+  const factory NotesEvent.addNote(Note note) = _AddNoteEvent;
+  const factory NotesEvent.updateNote(Note note) = _UpdateNoteEvent;
 }

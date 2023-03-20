@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => NotesBloc()..add(InitNotesEvent()),
+      create: (context) => NotesBloc()..add(const NotesEvent.init()),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeConfig.themeData,

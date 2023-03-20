@@ -16,12 +16,12 @@ class NoteCard extends StatelessWidget {
     return Dismissible(
       key: ValueKey<String>(note.id!),
       onDismissed: (direction) {
-        context.read<NotesBloc>().add(DeleteNoteEvent(note));
+        context.read<NotesBloc>().add(NotesEvent.deleteNote(note));
       },
       child: Card(
         child: CheckboxListTile(
           onChanged: (value) {
-            context.read<NotesBloc>().add(UpdateNoteEvent(note));
+            context.read<NotesBloc>().add(NotesEvent.updateNote(note));
           },
           title: Text(note.title),
           subtitle: Text(note.content),
